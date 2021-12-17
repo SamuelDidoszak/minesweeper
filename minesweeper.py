@@ -1,6 +1,14 @@
 import random
 
 class Layout:
+    def _boundaries(self, val, max):
+        if(val < 0):
+            return 0
+        elif(val > max - 1):
+            return max - 1
+        else:
+            return val
+    
     def __init__(self, n, m, bombs):
         self.bombs = bombs
         self.n = n
@@ -15,16 +23,7 @@ class Layout:
             if(self.map[nRand][mRand] == -2):
                 self.map[nRand][mRand] = -1
                 bombs -= 1
-                
-    def _boundaries(self, val, max):
-        if(val < 0):
-            return 0
-        elif(val > max - 1):
-            return max - 1
-        else:
-            return val
-               
-    def countSurrounding(self):
+        # count surrounding bombs
         for n in range(0, self.n):
             for m in range(0, self.m):
                 if(self.map[n][m] == -2):
@@ -32,7 +31,7 @@ class Layout:
                     for i in range(Layout._boundaries(self, n - 1, self.n), Layout._boundaries(self, n + 1, self.n) + 1):
                         for j in range(Layout._boundaries(self, m - 1, self.m), Layout._boundaries(self, m + 1, self.m) + 1):
                             count += 1 if self.map[i][j] == -1 else 0
-                    self.map[n][m] = count              
+                    self.map[n][m] = count          
                             
     def print(self):
         val = 0
@@ -80,8 +79,3 @@ class Board:
             self.layout.bombs += 1
         elif(self.board[n][m] == -3):
             self.board[n][m] = self.board[n][m] - 1
-            
-
-layout = Layout(3, 8, 10)
-layout.countSurrounding()
-layout.print();
