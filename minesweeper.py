@@ -15,7 +15,7 @@ class Layout:
         self.m = m
         # -2 for empty
         # -1 for bomb
-        self.map = [[-2 for i in range(0, m)] for i in range(0, n)]
+        self.map = [[-2 for i in range(0, n)] for i in range(0, m)]
         # if it takes long, add a list of bombless cells
         while(bombs != 0):
             nRand = random.randint(0, n - 1)
@@ -54,7 +54,7 @@ class Board:
         # -2 marked bomb
         # -3 ?
         # 0-9 bombs nearby
-        self.board = [[-1 for i in range(0, self.layout.m)] for i in range(0, self.layout.n)]
+        self.board = [[-4 for i in range(0, self.layout.n)] for i in range(0, self.layout.m)]
         
     def showSurrounding(self, n, m):
         print("lookin for bombs hmmmm")
@@ -62,11 +62,11 @@ class Board:
     def lClick(self, n, m):
         if(self.board[n][m] != -4):
             return
-        self.board[n][m] = layout[n][m]
+        self.board[n][m] = self.layout.map[n][m]
         if(self.board[n][m] == -1):
             self.gameOver = True
             return
-        showSurrounding(self, n, m)
+        Board.showSurrounding(self, n, m)
     
     def rClick(self, n, m):
         if(self.board[n][m] > -2):
