@@ -67,7 +67,7 @@ class GameWindow:
             
     def startGameWindow(self, board):
         self.board = board
-        windowLayout = [[psg.Button(-4, key="{} {}".format(i, j)) for i in range(0, m)] for j in range(0, n)]
+        windowLayout = [[psg.Button(-4, key="{} {}".format(i, j)) for j in range(0, n)] for i in range(0, m)]
         self.window = psg.Window("Minesweeper", windowLayout, finalize=True)
         # GameWindow.parseVisuals(self)
     
@@ -79,7 +79,10 @@ class GameWindow:
             print("event: ", event)
             n, m = event.split(" ")
             self.board.lClick(int(n), int(m))
-            GameWindow.parseCell(self, int(n), int(m))
+            if(self.board.board[int(n)][int(m)] != 0):
+                GameWindow.parseCell(self, int(n), int(m))
+            else:
+                GameWindow.parseVisuals(self)
         
         
 
