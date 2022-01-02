@@ -57,88 +57,65 @@ class Board:
         self.board = [[-4 for i in range(0, self.layout.m)] for i in range(0, self.layout.n)]
     
     def _changeCell(self, yPos, xPos):
-        # print("uncovering\t", yPos, xPos)
         y = self.layout._boundaries(yPos, self.layout.n)
         x = self.layout._boundaries(xPos, self.layout.m)
         self.board[y][x] = self.layout.map[y][x]
+        
+    def _scan(self, m1, m2, n, stack, changeTable):
+        added = False
+        # uncover left corner
+        if(self.layout.map[n][self.layout._boundaries(m1 - 1, self.layout.m)] != 0):
+            changeTable[n][self.layout._boundaries(m1 - 1, self.layout.m)] = self.layout.map[n][self.layout._boundaries(m1 - 1, self.layout.m)]
+        for m in range(m1, m2 + 1):
+            if(self.layout.map[n][m] != 0):
+                changeTable[n][m] = self.layout.map[n][m]
+                added = False
+            elif(added == False):
+                stack.append([n, m])
+                added = True
+        # uncover right corner
+        if(self.layout.map[n][self.layout._boundaries(m2 + 1, self.layout.m)] != 0):
+            changeTable[n][self.layout._boundaries(m2 + 1, self.layout.m)] = self.layout.map[n][self.layout._boundaries(m2 + 1, self.layout.m)]
                     
     def showSurrounding(self, n, m):
         try:
-            maxPos = 0
-            xDirection = -1     # changes to 1 instantly
-            yDirection = 1
-            # alghoritm written for bottom right corner
-            for side in range(1, 5):
-                if(side % 2 == 1):
-                    xDirection *= -1
-                if(side % 3 == 0):
-                    yDirection *= -1
-                
-                yPos = n
-                xPos = m
-                print("\n\ncurrent iteration: {}\n\n".format(side))
-                print(xDirection, yDirection, "\n\n")
-                
-                while(True):
-                    maxPosTemp = 0
-                    newMax = False
-                    while(self.layout.map[yPos][xPos] == 0):
-                        # uncover surrounding cells
-                        [Board._changeCell(self, y, x) for x in range(xPos - 1, xPos + 2) for y in range(yPos - 1, yPos + 2)]
-                        xPos += 1 * xDirection
-                        maxPosTemp += 1
-                        if(xPos < 0 or xPos >= self.layout.m):
-                            break
-                    if(maxPosTemp > maxPos):
-                        newMax = True if maxPos != 0 else False
-                        maxPos = maxPosTemp
-                    maxPosTemp = 0
-                    xPos = m
-                    yPos += 1 * yDirection
-                    
-                    if(yPos < 0 or yPos >= self.layout.n):
+            if(self.layout.map[n][m] != 0):
+                return
+            stack = []
+            changeTable = [[-4 for i in range(0, self.layout.m)] for i in range(0, self.layout.m)]
+            stack.append([n, m])
+            while(len(stack) != 0):
+                n, m = stack.pop()
+                m1 = m
+                m1_1Bound = self.layout._boundaries(m1 - 1, self.layout.m)
+                while(self.layout.map[n][m1_1Bound] == 0 and changeTable[n][m1_1Bound] == -4):
+                    changeTable[n][m1_1Bound] = 0
+                    m1 = m1 - 1
+                    m1_1Bound = self.layout._boundaries(m1 - 1, self.layout.m)
+                    if(m1 <= 0):
+                        m1 = 0
                         break
-                    
-                    debugIteration = 0
-                    if(self.layout.map[yPos][xPos] != 0 or newMax == True):
-                        print("got to alternative: ", yPos, ":", xPos)
-                        while(True):
-                            if(debugIteration == 30):
-                                print("debug timee")
-                            print("iteration")
-                            uncovered = 0
-                            if(not(self.layout.map[yPos][xPos] == 0 or maxPosTemp < maxPos)):
-                                print("broken")
-                                break;
-                            maxPosTemp = 0
-                            if(self.layout.map[yPos][xPos] == 0):
-                                if(self.layout.map[yPos][self.layout._boundaries(xPos - 1 * xDirection, self.layout.m)] != 0):
-                                    print("gave newStart")
-                                    newStart = xPos - 1 * xDirection
-                                    m = newStart                            # keep in mind
-                                    # Board.showSurrounding(self, yPos, newStart)
-                                # uncover surrounding cells
-                                print("uncovering from alternative: ", yPos, ":", xPos, "->")
-                                [Board._changeCell(self, y, x) for x in range(xPos - 1, xPos + 2) for y in range(yPos - 1, yPos + 2)]
-                                uncovered += 1
-                            xPos += 1 * xDirection
-                            maxPosTemp += 1
-                            if(xPos < 0 or xPos >= self.layout.m):
-                                xPos = m
-                                break
-                            debugIteration += 1
-                        yPos += 1 * yDirection
-                        if(yPos < 0 or yPos >= self.layout.n):
-                            break
-                        if(uncovered == 0):
-                            print("no uncovered, end of the algorithm")
-                            break
+                changeTable[n][self.layout._boundaries(m1 - 1, self.layout.m)] = self.layout.map[n][self.layout._boundaries(m1 - 1, self.layout.m)]       # uncover last from left
+                while(self.layout.map[n][m] == 0 and (changeTable[n][m] == -4 or (changeTable[n][m] == 0 and m == 0))):
+                    changeTable[n][m] = 0
+                    m = m + 1
+                    if(m == self.layout.m):
+                        break
+                changeTable[n][self.layout._boundaries(m, self.layout.m)] = self.layout.map[n][self.layout._boundaries(m, self.layout.m)]        # uncover last from right   |   doesn't work when m = 0
+                if(m == 0):
+                    m += 1
+                if(n + 1 <= self.layout.n - 1):
+                    Board._scan(self, m1, m - 1, n + 1, stack, changeTable)
+                if(n - 1 >= 0 and (changeTable[n - 1][self.layout._boundaries(m1, self.layout.m)] == -4 or changeTable[n - 1][self.layout._boundaries(m, self.layout.m)] == -4)):
+                    m1_1Bound = self.layout._boundaries(m1 - 1, self.layout.m)
+                    Board._scan(self, m1, m - 1, n - 1, stack, changeTable)
         
         finally:
-            self.layout.print()
-            print("\n")
-            Board.print(self, self.board)
-                    
+            for n in range(0, self.layout.n):
+                for m in range(0, self.layout.m):
+                    if(changeTable[n][m] != -4):
+                        self.board[n][m] = changeTable[n][m]
+
     
     def lClick(self, n, m):
         if(self.board[n][m] != -4):
@@ -148,6 +125,7 @@ class Board:
             self.gameOver = True
             return
         if(self.board[n][m] == 0):
+            self.board[n][m] = -4
             Board.showSurrounding(self, n, m)
     
     def rClick(self, n, m):
