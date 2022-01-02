@@ -82,7 +82,7 @@ class Board:
             if(self.layout.map[n][m] != 0):
                 return
             stack = []
-            changeTable = [[-4 for i in range(0, self.layout.m)] for i in range(0, self.layout.m)]
+            changeTable = [[-4 for i in range(0, self.layout.m)] for i in range(0, self.layout.n)]
             stack.append([n, m])
             while(len(stack) != 0):
                 n, m = stack.pop()
@@ -107,7 +107,7 @@ class Board:
                 if(n + 1 <= self.layout.n - 1):
                     Board._scan(self, m1, m - 1, n + 1, stack, changeTable)
                 if(n - 1 >= 0 and (changeTable[n - 1][self.layout._boundaries(m1, self.layout.m)] == -4 or changeTable[n - 1][self.layout._boundaries(m, self.layout.m)] == -4)):
-                    m1_1Bound = self.layout._boundaries(m1 - 1, self.layout.m)
+                    # m1_1Bound = self.layout._boundaries(m1 - 1, self.layout.m)
                     Board._scan(self, m1, m - 1, n - 1, stack, changeTable)
         
         finally:
