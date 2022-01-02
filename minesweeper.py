@@ -64,57 +64,75 @@ class Board:
                     
     def showSurrounding(self, n, m):
         try:
-            yPos = n
-            xPos = m
             maxPos = 0
+            xDirection = -1     # changes to 1 instantly
+            yDirection = 1
             # alghoritm written for bottom right corner
-            while(True):
-                maxPosTemp = 0
-                newMax = False
-                while(self.layout.map[yPos][xPos] == 0):
-                    # uncover surrounding cells
-                    [Board._changeCell(self, y, x) for x in range(xPos - 1, xPos + 2) for y in range(yPos - 1, yPos + 2)]
-                    xPos += 1
-                    maxPosTemp += 1
-                    if(xPos == self.layout.m or xPos == 0):
-                        break
-                if(maxPosTemp > maxPos):
-                    newMax = True if maxPos != 0 else False
-                    maxPos = maxPosTemp
-                maxPosTemp = 0
+            for side in range(1, 5):
+                if(side % 2 == 1):
+                    xDirection *= -1
+                if(side % 3 == 0):
+                    yDirection *= -1
+                
+                yPos = n
                 xPos = m
-                yPos += 1
+                print("\n\ncurrent iteration: {}\n\n".format(side))
+                print(xDirection, yDirection, "\n\n")
                 
-                if(yPos == 0 or yPos == self.layout.n):
-                    break
-                
-                if(self.layout.map[yPos][xPos] != 0 or newMax == True):
-                    print("got to alternative: ", yPos, ":", xPos)
-                    while(True):
-                        print("iteration")
-                        uncovered = 0
-                        if(not(self.layout.map[yPos][xPos] == 0 or maxPosTemp < maxPos)):
-                            print("broken")
-                            break;
-                        maxPosTemp = 0
-                        if(self.layout.map[yPos][xPos] == 0):
-                            if(self.layout.map[yPos][xPos - 1] != 0):
-                                print("gave newStart")
-                                newStart = xPos - 1
-                                m = newStart                            # keep in mind
-                            # uncover surrounding cells
-                            print("uncovering from alternative: ", yPos, ":", xPos, "->")
-                            [Board._changeCell(self, y, x) for x in range(xPos - 1, xPos + 2) for y in range(yPos - 1, yPos + 2)]
-                            uncovered += 1
-                        xPos += 1
+                while(True):
+                    maxPosTemp = 0
+                    newMax = False
+                    while(self.layout.map[yPos][xPos] == 0):
+                        # uncover surrounding cells
+                        [Board._changeCell(self, y, x) for x in range(xPos - 1, xPos + 2) for y in range(yPos - 1, yPos + 2)]
+                        xPos += 1 * xDirection
                         maxPosTemp += 1
-                        if(xPos == 0 or xPos == self.layout.m):
-                            xPos = m
+                        if(xPos < 0 or xPos >= self.layout.m):
                             break
-                    yPos += 1
-                    if(uncovered == 0):
-                        print("no uncovered, end of the algorithm")
+                    if(maxPosTemp > maxPos):
+                        newMax = True if maxPos != 0 else False
+                        maxPos = maxPosTemp
+                    maxPosTemp = 0
+                    xPos = m
+                    yPos += 1 * yDirection
+                    
+                    if(yPos < 0 or yPos >= self.layout.n):
                         break
+                    
+                    debugIteration = 0
+                    if(self.layout.map[yPos][xPos] != 0 or newMax == True):
+                        print("got to alternative: ", yPos, ":", xPos)
+                        while(True):
+                            if(debugIteration == 30):
+                                print("debug timee")
+                            print("iteration")
+                            uncovered = 0
+                            if(not(self.layout.map[yPos][xPos] == 0 or maxPosTemp < maxPos)):
+                                print("broken")
+                                break;
+                            maxPosTemp = 0
+                            if(self.layout.map[yPos][xPos] == 0):
+                                if(self.layout.map[yPos][self.layout._boundaries(xPos - 1 * xDirection, self.layout.m)] != 0):
+                                    print("gave newStart")
+                                    newStart = xPos - 1 * xDirection
+                                    m = newStart                            # keep in mind
+                                    # Board.showSurrounding(self, yPos, newStart)
+                                # uncover surrounding cells
+                                print("uncovering from alternative: ", yPos, ":", xPos, "->")
+                                [Board._changeCell(self, y, x) for x in range(xPos - 1, xPos + 2) for y in range(yPos - 1, yPos + 2)]
+                                uncovered += 1
+                            xPos += 1 * xDirection
+                            maxPosTemp += 1
+                            if(xPos < 0 or xPos >= self.layout.m):
+                                xPos = m
+                                break
+                            debugIteration += 1
+                        yPos += 1 * yDirection
+                        if(yPos < 0 or yPos >= self.layout.n):
+                            break
+                        if(uncovered == 0):
+                            print("no uncovered, end of the algorithm")
+                            break
         
         finally:
             self.layout.print()
