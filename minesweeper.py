@@ -113,7 +113,7 @@ class Board:
         finally:
             for n in range(0, self.layout.n):
                 for m in range(0, self.layout.m):
-                    if(changeTable[n][m] != -4):
+                    if(changeTable[n][m] != -4 and self.board[n][m] != -2 and self.board[n][m] != -3):
                         self.board[n][m] = changeTable[n][m]
 
     
@@ -133,10 +133,10 @@ class Board:
             return
         if(self.board[n][m] == -4):
             self.board[n][m] = -2
-            self.layout.bombs -= 1
+            # self.layout.bombs -= 1
         elif(self.board[n][m] == -2):
             self.board[n][m] = self.board[n][m] - 1
-            self.layout.bombs += 1
+            # self.layout.bombs += 1
         elif(self.board[n][m] == -3):
             self.board[n][m] = self.board[n][m] - 1
             
@@ -156,3 +156,19 @@ class Board:
                 else:
                     print(val, end = "\t")
             print("\n")
+            
+    def checkWinFlags(self):
+        correctFlags = 0
+        for n in range(0, self.layout.n):
+            for m in range(0, self.layout.m):
+                if(self.board[n][m] == -2 and self.layout.map[n][m] == -1):
+                    correctFlags += 1
+        return correctFlags == self.layout.bombs
+    
+    def checkWinCells(self):
+        cellAmount = 0
+        for n in range(0, self.layout.n):
+            for m in range(0, self.layout.m):
+                if(self.board[n][m] == -4 or self.board[n][m] == -2 or self.board[n][m] == -3):
+                    cellAmount += 1
+        return cellAmount == self.layout.bombs

@@ -50,35 +50,43 @@ class GameWindow:
                 elif(val == -4):
                     self.window["{} {}".format(i, j)].update(" ")
                 elif(val == -1):
-                    self.window["{} {}".format(i, j)].update("*")
+                    self.window["{} {}".format(i, j)].update("*", disabled = True)
                 elif(val == -2):
                     self.window["{} {}".format(i, j)].update("!")
                 elif(val == -3):
                     self.window["{} {}".format(i, j)].update("?")
                 else:
-                    self.window["{} {}".format(i, j)].update("{}".format(val))
+                    self.window["{} {}".format(i, j)].update("{}".format(val), disabled = True)
     
     def parseCell(self, i, j):
                 val = self.board.board[i][j]
                 if(val == 0):
                     self.window["{} {}".format(i, j)].update(" ", disabled = True, button_color=("#303f9f", "#303f9f"))
                 elif(val == -4):
-                    self.window["{} {}".format(i, j)].update(" ")
+                    self.window["{} {}".format(i, j)].update(" ", disabled = False)
                 elif(val == -1):
-                    self.window["{} {}".format(i, j)].update("*")
+                    self.window["{} {}".format(i, j)].update("*", disabled = True)
                 elif(val == -2):
-                    self.window["{} {}".format(i, j)].update("!")
+                    self.window["{} {}".format(i, j)].update("!", disabled = True)
+                    self.window["-FLAGS-"].update(int(self.window["-FLAGS-"].get()) + 1)
                 elif(val == -3):
-                    self.window["{} {}".format(i, j)].update("?")
+                    self.window["{} {}".format(i, j)].update("?", disabled = True)
+                    self.window["-FLAGS-"].update(int(self.window["-FLAGS-"].get()) - 1)
                 else:
-                    self.window["{} {}".format(i, j)].update("{}".format(val))
+                    self.window["{} {}".format(i, j)].update("{}".format(val), disabled = True, button_color=("#FFFFFF", "#3f51b5"))
         
             
     def startGameWindow(self, board):
         self.board = board
-        windowLayout = [[psg.Button(-4, key="{} {}".format(i, j), 
-                                    size=(6, 3), button_color=("#FFFFFF", "#3f51b5"), font="* 16 bold"
+        windowLayout = [
+            [psg.Text("0", key='-FLAGS-', text_color="#FFFFFF", background_color="#303f9f", justification="right", expand_x=True, pad=(0, 0)), 
+             psg.Text("/ {}".format(self.board.layout.bombs), key='-BOMBS-', text_color="#FFFFFF", background_color="#303f9f", justification="left", pad=(0, 0))],
+            [[psg.Button(-4, key="{} {}".format(i, j),
+                                    # right_click_menu=["rightClick",[f" ?::{i, j}" if self.board.board[i][j] == -2 else f" !::{i, j}"]],
+                                    right_click_menu=["rightClick",[f"marker::{i, j}"]],
+                                    size=(2, 1), button_color=("#FFFFFF", "#3f51b5"), font="* 16 bold", disabled_button_color=("#FFFFFF", "#3f51b5")
                                     ) for j in range(0, m)] for i in range(0, n)]
+        ]
         self.window = psg.Window("Minesweeper", windowLayout, finalize=True, background_color="#303f9f")
         # GameWindow.parseVisuals(self)
     
@@ -87,13 +95,25 @@ class GameWindow:
             event, values = gameWindow.window.read()
             if(event == psg.WIN_CLOSED):
                 break
-            print("event: ", event)
+            # checking if the button was right clicked
+            if(event.startswith("marker")):
+                event = event[event.find("(")+1: len(event)-1]
+                n, m = event.split(", ")
+                self.board.rClick(int(n), int(m))
+                GameWindow.parseCell(self, int(n), int(m))
+                flagAmount = int(self.window["-FLAGS-"].get())
+                if(flagAmount == self.board.layout.bombs):
+                    if(self.board.checkWinFlags() == True):
+                        print("YOU WON")
+                continue
             n, m = event.split(" ")
             self.board.lClick(int(n), int(m))
             if(self.board.board[int(n)][int(m)] != 0):
                 GameWindow.parseCell(self, int(n), int(m))
             else:
                 GameWindow.parseVisuals(self)
+            if(self.board.checkWinCells() == True):
+                print("YOU WON")
         
         
 
