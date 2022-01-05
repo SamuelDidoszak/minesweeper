@@ -7,17 +7,17 @@ class GameWindow:
             # [psg.Text("n: \t"), psg.Input(key="-N-")],
             # [psg.Text("m: \t"), psg.Input(key="-M-")],
             # [psg.Text("Bombs: \t"), psg.Input(key="-BOMBS-")],
-            [psg.Text("n: \t", text_color="#FFFFFF", background_color="#303f9f"), psg.Input(text_color="#FFFFFF", background_color="#3f51b5")],
-            [psg.Text("m: \t", text_color="#FFFFFF", background_color="#303f9f"), psg.Input(text_color="#FFFFFF", background_color="#3f51b5")],
-            [psg.Text("Bombs: \t", text_color="#FFFFFF", background_color="#303f9f"), psg.Input(text_color="#FFFFFF", background_color="#3f51b5")],
+            [psg.Text("n: \t", text_color="#FFFFFF", background_color="#303f9f"), psg.Input(key="-N-", text_color="#FFFFFF", background_color="#3f51b5")],
+            [psg.Text("m: \t", text_color="#FFFFFF", background_color="#303f9f"), psg.Input(key="-M-", text_color="#FFFFFF", background_color="#3f51b5")],
+            [psg.Text("Bombs: \t", text_color="#FFFFFF", background_color="#303f9f"), psg.Input(key="-BOMBS-", text_color="#FFFFFF", background_color="#3f51b5")],
             [psg.Text(size=(40,1), key='-ERRORMSG-', text_color="#ff5722", background_color="#303f9f")],
             [psg.Button("Start", button_color=("#FFFFFF", "#3f51b5"))]
         ]
-        self.window = psg.Window("Minesweeper", windowLayout
+        self.window = psg.Window("Minesweeper", windowLayout, finalize=True
                                  , background_color="#303f9f")
         
-    def readVals(self):
-        # event, values = self.window.read()
+    def readVals(self, values):
+        print(values)
         self.window["-ERRORMSG-"].update("")
         # check variables
         try:
@@ -27,19 +27,32 @@ class GameWindow:
             return None, None, None
         if(n < 2 or n > 15):
             self.window["-ERRORMSG-"].update("n value is out of bounds")
-            # window["-N-"].update("")
+            self.window["-N-"].update("")
         if(m < 2 or m > 15):
             self.window["-ERRORMSG-"].update("m value is out of bounds")
-            # window["-M-"].update("")
+            self.window["-M-"].update("")
         if(bombs < 1 or bombs > (n * m)):
             self.window["-ERRORMSG-"].update("bomb value is out of bounds")
-            # window["-BOMBS-"].update("")
+            self.window["-BOMBS-"].update("")
             
         if(self.window["-ERRORMSG-"].get() == ""):
             self.window.close()
             return n, m, bombs
         
         return None, None, None
+
+    def gameEnded(self, won):
+        prompt = "You have won! \nStart a new game?" if won == True else "You lost. \nStart a new game?"
+        returnValue = psg.popup(prompt, background_color="#303f9f", button_color=("#FFFFFF", "#3f51b5"), custom_text=("New game", "Exit"), grab_anywhere=True)
+        print("RETURN: ", returnValue)
+        global exitGame
+        if(returnValue == "Exit"):
+            exitGame = True
+            print("called")
+        else:
+            exitGame = False
+            return
+        
 
     def parseVisuals(self):
         for i in range(0, n):
@@ -104,39 +117,48 @@ class GameWindow:
                 flagAmount = int(self.window["-FLAGS-"].get())
                 if(flagAmount == self.board.layout.bombs):
                     if(self.board.checkWinFlags() == True):
+                        self.gameEnded(True)
                         print("YOU WON")
+                        break
                 continue
             n, m = event.split(" ")
             self.board.lClick(int(n), int(m))
             if(self.board.board[int(n)][int(m)] != 0):
                 GameWindow.parseCell(self, int(n), int(m))
+                if(self.board.board[int(n)][int(m)] == -1):
+                    self.gameEnded(False)
+                    break
             else:
                 GameWindow.parseVisuals(self)
             if(self.board.checkWinCells() == True):
                 print("YOU WON")
+                self.gameEnded(True)
+                break
         
         
-
+        
 gameWindow = GameWindow()
-gameWindow.initiateWindow()
 
 while True:
+    gameWindow.initiateWindow()
+    exitGame = True
     while True:
         event, values = gameWindow.window.read()
         if(event == psg.WIN_CLOSED):
             break
-        n, m, bombs = gameWindow.readVals()
+        n, m, bombs = gameWindow.readVals(list(values.values()))
         if(n != None):
             break
 
     layout = Layout(n, m, bombs)
     board = Board(layout)
-    # layout.print();
 
     gameWindow.startGameWindow(board)
     gameWindow.parseVisuals()
     gameWindow.gameLoop()
-    break
+    gameWindow.window.close()
+    if(exitGame == True):
+        break
 
 
 

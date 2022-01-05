@@ -66,6 +66,9 @@ class Board:
         # uncover left corner
         if(self.layout.map[n][self.layout._boundaries(m1 - 1, self.layout.m)] != 0):
             changeTable[n][self.layout._boundaries(m1 - 1, self.layout.m)] = self.layout.map[n][self.layout._boundaries(m1 - 1, self.layout.m)]
+        # elif(([n, self.layout._boundaries(m1 - 1, self.layout.m)]).issubset(set(changeTable)) == False):
+        #     print(n, self.layout._boundaries(m1 - 1, self.layout.m))
+        #     stack.append([n][self.layout._boundaries(m1 - 1, self.layout.m)])
         for m in range(m1, m2 + 1):
             if(self.layout.map[n][m] != 0):
                 changeTable[n][m] = self.layout.map[n][m]
@@ -76,6 +79,8 @@ class Board:
         # uncover right corner
         if(self.layout.map[n][self.layout._boundaries(m2 + 1, self.layout.m)] != 0):
             changeTable[n][self.layout._boundaries(m2 + 1, self.layout.m)] = self.layout.map[n][self.layout._boundaries(m2 + 1, self.layout.m)]
+        # elif(([n, self.layout._boundaries(m2 + 1, self.layout.m)]).issubset(set(changeTable)) == False):
+        #     stack.append([n][self.layout._boundaries(m2 + 1, self.layout.m)])
                     
     def showSurrounding(self, n, m):
         try:
@@ -133,10 +138,8 @@ class Board:
             return
         if(self.board[n][m] == -4):
             self.board[n][m] = -2
-            # self.layout.bombs -= 1
         elif(self.board[n][m] == -2):
             self.board[n][m] = self.board[n][m] - 1
-            # self.layout.bombs += 1
         elif(self.board[n][m] == -3):
             self.board[n][m] = self.board[n][m] - 1
             
