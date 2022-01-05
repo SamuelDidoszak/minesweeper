@@ -87,6 +87,19 @@ class GameWindow:
                     self.window["-FLAGS-"].update(int(self.window["-FLAGS-"].get()) - 1)
                 else:
                     self.window["{} {}".format(i, j)].update("{}".format(val), disabled = True, button_color=("#FFFFFF", "#3f51b5"))
+                    
+    def parseXyzzy(self, key):
+        if(key == "x"):
+            self.keyInputs = ["x"]
+        else:
+            self.keyInputs.append(key)
+        print("".join(self.keyInputs[-5 : len(self.keyInputs)+1]))
+        if("".join(self.keyInputs[-5 : len(self.keyInputs)+1]) == "xyzzy"):
+            for n in range(0, self.board.layout.n):
+                for m in range(0, self.board.layout.m):
+                    if(self.board.layout.map[n][m] == -1):
+                        self.window["{} {}".format(n, m)].update(button_color=("#ff5722", "#ff5722"))
+                        
         
             
     def startGameWindow(self, board):
@@ -100,7 +113,8 @@ class GameWindow:
                                     size=(2, 1), button_color=("#FFFFFF", "#3f51b5"), font="* 16 bold", disabled_button_color=("#FFFFFF", "#3f51b5")
                                     ) for j in range(0, m)] for i in range(0, n)]
         ]
-        self.window = psg.Window("Minesweeper", windowLayout, finalize=True, background_color="#303f9f")
+        self.window = psg.Window("Minesweeper", windowLayout, finalize=True, return_keyboard_events=True, background_color="#303f9f")
+        self.keyInputs = []
         # GameWindow.parseVisuals(self)
     
     def gameLoop(self):
@@ -108,6 +122,10 @@ class GameWindow:
             event, values = gameWindow.window.read()
             if(event == psg.WIN_CLOSED):
                 break
+            # checking if the event is a keyboard input
+            if(len(event) == 1):
+                self.parseXyzzy(event)
+                continue
             # checking if the button was right clicked
             if(event.startswith("marker")):
                 event = event[event.find("(")+1: len(event)-1]
@@ -149,7 +167,9 @@ while True:
         n, m, bombs = gameWindow.readVals(list(values.values()))
         if(n != None):
             break
-
+    if(values == None):
+        break
+    
     layout = Layout(n, m, bombs)
     board = Board(layout)
 
