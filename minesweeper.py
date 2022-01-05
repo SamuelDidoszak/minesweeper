@@ -64,11 +64,11 @@ class Board:
     def _scan(self, m1, m2, n, stack, changeTable):
         added = False
         # uncover left corner
-        if(self.layout.map[n][self.layout._boundaries(m1 - 1, self.layout.m)] != 0):
-            changeTable[n][self.layout._boundaries(m1 - 1, self.layout.m)] = self.layout.map[n][self.layout._boundaries(m1 - 1, self.layout.m)]
-        # elif(([n, self.layout._boundaries(m1 - 1, self.layout.m)]).issubset(set(changeTable)) == False):
-        #     print(n, self.layout._boundaries(m1 - 1, self.layout.m))
-        #     stack.append([n][self.layout._boundaries(m1 - 1, self.layout.m)])
+        m1_1LBound = self.layout._boundaries(m1 - 1, self.layout.m)
+        if(self.layout.map[n][m1_1LBound] != 0):
+            changeTable[n][m1_1LBound] = self.layout.map[n][m1_1LBound]
+        elif(m1 != 0 and self.layout.map[n][m1] != 0):
+            stack.append([n, m1_1LBound])
         for m in range(m1, m2 + 1):
             if(self.layout.map[n][m] != 0):
                 changeTable[n][m] = self.layout.map[n][m]
@@ -77,10 +77,11 @@ class Board:
                 stack.append([n, m])
                 added = True
         # uncover right corner
-        if(self.layout.map[n][self.layout._boundaries(m2 + 1, self.layout.m)] != 0):
-            changeTable[n][self.layout._boundaries(m2 + 1, self.layout.m)] = self.layout.map[n][self.layout._boundaries(m2 + 1, self.layout.m)]
-        # elif(([n, self.layout._boundaries(m2 + 1, self.layout.m)]).issubset(set(changeTable)) == False):
-        #     stack.append([n][self.layout._boundaries(m2 + 1, self.layout.m)])
+        m1_1RBound = self.layout._boundaries(m2 + 1, self.layout.m)
+        if(self.layout.map[n][m1_1RBound] != 0):
+            changeTable[n][m1_1RBound] = self.layout.map[n][m1_1RBound]
+        elif(m2 != self.layout.m-1 and self.layout.map[n][m2] != 0):
+            stack.append([n, m1_1RBound])
                     
     def showSurrounding(self, n, m):
         try:
@@ -111,7 +112,7 @@ class Board:
                     m += 1
                 if(n + 1 <= self.layout.n - 1):
                     Board._scan(self, m1, m - 1, n + 1, stack, changeTable)
-                if(n - 1 >= 0 and (changeTable[n - 1][self.layout._boundaries(m1, self.layout.m)] == -4 or changeTable[n - 1][self.layout._boundaries(m, self.layout.m)] == -4)):
+                if(n - 1 >= 0 and (changeTable[n - 1][self.layout._boundaries(m1, self.layout.m)] == -4 or changeTable[n - 1][self.layout._boundaries(m1 - 1, self.layout.m)] == -4 or changeTable[n - 1][self.layout._boundaries(m, self.layout.m)] == -4)):
                     # m1_1Bound = self.layout._boundaries(m1 - 1, self.layout.m)
                     Board._scan(self, m1, m - 1, n - 1, stack, changeTable)
         

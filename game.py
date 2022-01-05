@@ -17,7 +17,6 @@ class GameWindow:
                                  , background_color="#303f9f")
         
     def readVals(self, values):
-        print(values)
         self.window["-ERRORMSG-"].update("")
         # check variables
         try:
@@ -44,11 +43,9 @@ class GameWindow:
     def gameEnded(self, won):
         prompt = "You have won! \nStart a new game?" if won == True else "You lost. \nStart a new game?"
         returnValue = psg.popup(prompt, background_color="#303f9f", button_color=("#FFFFFF", "#3f51b5"), custom_text=("New game", "Exit"), grab_anywhere=True)
-        print("RETURN: ", returnValue)
         global exitGame
         if(returnValue == "Exit"):
             exitGame = True
-            print("called")
         else:
             exitGame = False
             return
@@ -93,7 +90,6 @@ class GameWindow:
             self.keyInputs = ["x"]
         else:
             self.keyInputs.append(key)
-        print("".join(self.keyInputs[-5 : len(self.keyInputs)+1]))
         if("".join(self.keyInputs[-5 : len(self.keyInputs)+1]) == "xyzzy"):
             for n in range(0, self.board.layout.n):
                 for m in range(0, self.board.layout.m):
@@ -107,7 +103,7 @@ class GameWindow:
         windowLayout = [
             [psg.Text("0", key='-FLAGS-', text_color="#FFFFFF", background_color="#303f9f", justification="right", expand_x=True, pad=(0, 0)), 
              psg.Text("/ {}".format(self.board.layout.bombs), key='-BOMBS-', text_color="#FFFFFF", background_color="#303f9f", justification="left", pad=(0, 0))],
-            [[psg.Button(-4, key="{} {}".format(i, j),
+            [[psg.Button("", key="{} {}".format(i, j),
                                     # right_click_menu=["rightClick",[f" ?::{i, j}" if self.board.board[i][j] == -2 else f" !::{i, j}"]],
                                     right_click_menu=["rightClick",[f"marker::{i, j}"]],
                                     size=(2, 1), button_color=("#FFFFFF", "#3f51b5"), font="* 16 bold", disabled_button_color=("#FFFFFF", "#3f51b5")
@@ -136,7 +132,6 @@ class GameWindow:
                 if(flagAmount == self.board.layout.bombs):
                     if(self.board.checkWinFlags() == True):
                         self.gameEnded(True)
-                        print("YOU WON")
                         break
                 continue
             n, m = event.split(" ")
@@ -149,7 +144,6 @@ class GameWindow:
             else:
                 GameWindow.parseVisuals(self)
             if(self.board.checkWinCells() == True):
-                print("YOU WON")
                 self.gameEnded(True)
                 break
         
