@@ -1,5 +1,7 @@
 import PySimpleGUI as psg
-from minesweeper import *
+from layout import *
+from board import *
+from exceptions import *
 
 class GameWindow:
     def initiateWindow(self):
@@ -16,23 +18,48 @@ class GameWindow:
         self.window = psg.Window("Minesweeper", windowLayout, finalize=True
                                  , background_color="#303f9f")
         
+    # def readVals(self, values):
+    #     self.window["-ERRORMSG-"].update("")
+    #     # check variables
+    #     try:
+    #         n, m, bombs = (int(values[0]), int(values[1]), int(values[2]))
+    #     except:
+    #         self.window["-ERRORMSG-"].update("insert all values")
+    #         return None, None, None
+    #     if(n < 2 or n > 15):
+    #         self.window["-ERRORMSG-"].update("n value is out of bounds")
+    #         self.window["-N-"].update("")
+    #     if(m < 2 or m > 15):
+    #         self.window["-ERRORMSG-"].update("m value is out of bounds")
+    #         self.window["-M-"].update("")
+    #     if(bombs < 1 or bombs > (n * m)):
+    #         self.window["-ERRORMSG-"].update("bomb value is out of bounds")
+    #         self.window["-BOMBS-"].update("")
+            
+    #     if(self.window["-ERRORMSG-"].get() == ""):
+    #         self.window.close()
+    #         return n, m, bombs
+        
+    #     return None, None, None
+    
     def readVals(self, values):
         self.window["-ERRORMSG-"].update("")
         # check variables
         try:
             n, m, bombs = (int(values[0]), int(values[1]), int(values[2]))
         except:
-            self.window["-ERRORMSG-"].update("insert all values")
+            self.window["-ERRORMSG-"].update(EmptyValuesException())
             return None, None, None
-        if(n < 2 or n > 15):
-            self.window["-ERRORMSG-"].update("n value is out of bounds")
-            self.window["-N-"].update("")
-        if(m < 2 or m > 15):
-            self.window["-ERRORMSG-"].update("m value is out of bounds")
-            self.window["-M-"].update("")
-        if(bombs < 1 or bombs > (n * m)):
-            self.window["-ERRORMSG-"].update("bomb value is out of bounds")
-            self.window["-BOMBS-"].update("")
+        try:
+            if(n < 2 or n > 15):
+                raise ValuesOutOfBoundsException("n")
+            if(m < 2 or m > 15):
+                raise ValuesOutOfBoundsException("m")
+            if(bombs < 1 or bombs > (n * m)):
+                raise ValuesOutOfBoundsException("bombs")
+        except ValuesOutOfBoundsException as e:
+            self.window["-ERRORMSG-"].update(e)
+            self.window["-{}-".format(str(e.val).upper())].update("")
             
         if(self.window["-ERRORMSG-"].get() == ""):
             self.window.close()
@@ -173,13 +200,3 @@ while True:
     gameWindow.window.close()
     if(exitGame == True):
         break
-
-
-
-
-
-
-
-
-
-# window.close()
