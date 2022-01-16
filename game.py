@@ -18,7 +18,7 @@ while True:
     gameWindow.initiateWindow()
     exitGame = True
     while True:
-        event, values = gameWindow.window.read()
+        event, values = gameWindow._window.read()
         if(event == psg.WIN_CLOSED):
             break
         n, m, bombs = gameWindow.readVals(list(values.values()))
@@ -34,7 +34,7 @@ while True:
     gameWindow.parseVisuals()
     
     while True:
-        event, values = gameWindow.window.read()
+        event, values = gameWindow._window.read()
         if(event == psg.WIN_CLOSED):
             break
         # checking if the event is a keyboard input
@@ -45,27 +45,27 @@ while True:
         if(event.startswith("marker")):
             event = event[event.find("(")+1: len(event)-1]
             n, m = event.split(", ")
-            gameWindow.board.rClick(int(n), int(m))
+            gameWindow._board.rClick(int(n), int(m))
             gameWindow.parseCell(int(n), int(m))
-            flagAmount = int(gameWindow.window["-FLAGS-"].get())
-            if(flagAmount == gameWindow.board.layout.bombs):
-                if(gameWindow.board.checkWinFlags() == True):
+            flagAmount = int(gameWindow._window["-FLAGS-"].get())
+            if(flagAmount == gameWindow._board.getLayout().getBombs()):
+                if(gameWindow._board.checkWinFlags() == True):
                     gameEnded(True, gameWindow)
                     break
             continue
         n, m = event.split(" ")
-        gameWindow.board.lClick(int(n), int(m))
-        if(gameWindow.board.board[int(n)][int(m)] != 0):
+        gameWindow._board.lClick(int(n), int(m))
+        if(gameWindow._board.getBoard()[int(n)][int(m)] != 0):
             gameWindow.parseCell(int(n), int(m))
-            if(gameWindow.board.board[int(n)][int(m)] == -1):
+            if(gameWindow._board.getBoard()[int(n)][int(m)] == -1):
                 gameEnded(False, gameWindow)
                 break
         else:
             gameWindow.parseVisuals()
-        if(gameWindow.board.checkWinCells() == True):
+        if(gameWindow._board.checkWinCells() == True):
             gameEnded(True, gameWindow)
             break
     
-    gameWindow.window.close()
+    gameWindow._window.close()
     if(exitGame == True):
         break
