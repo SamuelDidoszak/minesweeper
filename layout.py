@@ -1,7 +1,27 @@
 import random
 
 class Layout:
+    """
+    Class for the layout of the game.
+    Holds the map with cell values.
+    
+    Attributes:
+        _n(int): x dimension value
+        _m(int): y dimension value
+        _bombs(int): amount of bombs
+        _map(int[][]): map of the game. It's values are -1 if the cell contains a bomb, or numbers 0-8 that represent the amount of surrounding bombs
+    """
     def _boundaries(self, val, max):
+        """
+        Checks if val is within bounds of map <br/>
+        
+        Parameters:
+            val(int): value to check
+            max(int): maximum bound value. Pass <i>n</i> or <i>m</i>
+            
+        Returns:
+            either val, 0 if val < 0 or max if val > max - 1
+        """
         if(val < 0):
             return 0
         elif(val > max - 1):
@@ -10,6 +30,15 @@ class Layout:
             return val
     
     def __init__(self, n, m, bombs):
+        """
+        The constructor for Layout class.
+        Initializes the map and counts surrounding bombs for every cell
+        
+        Attributes:
+            n(int): x length value
+            m(int): y length value
+            bombs(int): amount of bombs
+        """
         self._bombs = bombs
         self._n = n
         self._m = m
@@ -34,6 +63,10 @@ class Layout:
                     self._map[n][m] = count          
                             
     def print(self):
+        """
+        Prints map to the console
+        Useful for debugging purposes
+        """
         val = 0
         for n in range(0, self._n):
             for m in range(0, self._m):
@@ -45,7 +78,16 @@ class Layout:
             print("\n")
             
     def getMap(self):
+        """
+        Returns:
+            int[][]: the _map attribute
+            It's values are -1 if the cell contains a bomb, or numbers 0-8 that represent the amount of surrounding bombs
+        """
         return self._map
     
     def getBombs(self):
+        """
+        Returns:
+            int: the amount of bombs
+        """
         return self._bombs

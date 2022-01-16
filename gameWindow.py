@@ -4,7 +4,18 @@ from board import *
 from exceptions import *
 
 class GameWindow:
+    """
+    Class containing all of the methods necessary for displaying GUI to the user.
+    
+    Attributes:
+        _window(PySimpleGUI Window): current window that is shown to the player
+        _board(Board): board of the game
+        _keyInputs(str[]): list containing the keystrokes input by the user. Clears every time user hits 'x' key
+    """
     def initiateWindow(self):
+        """
+        The first method to be called. Creates the window which prompts user to input n, m and bomb values
+        """
         windowLayout = [
             [psg.Text("n: \t", text_color="#FFFFFF", background_color="#303f9f"), psg.Input(key="-N-", text_color="#FFFFFF", background_color="#3f51b5")],
             [psg.Text("m: \t", text_color="#FFFFFF", background_color="#303f9f"), psg.Input(key="-M-", text_color="#FFFFFF", background_color="#3f51b5")],
@@ -16,6 +27,18 @@ class GameWindow:
                                  , background_color="#303f9f")
     
     def readVals(self, values):
+        """
+        Parses values input by the user.
+        
+        Params:
+            values: values that user inserted into according psg.Input elements
+            
+        Returns:
+            n(int): y dimension size of the game
+            m(int): x dimension size of the game
+            bombs(int): bomb number
+            null, null, null if parsing threw errors
+        """
         self._window["-ERRORMSG-"].update("")
         # check variables
         try:
@@ -41,6 +64,10 @@ class GameWindow:
         return None, None, None   
 
     def parseVisuals(self):
+        """
+        Parses the graphical board of the whole game.
+        Changes int values of the board into characters shown to the user and disables necessary cells
+        """
         for i in range(0, self._board.getN()):
             for j in range(0, self._board.getM()):
                 val = self._board.getBoard()[i][j]
@@ -58,23 +85,35 @@ class GameWindow:
                     self._window["{} {}".format(i, j)].update("{}".format(val), disabled = True)
     
     def parseCell(self, i, j):
-                val = self._board.getBoard()[i][j]
-                if(val == 0):
-                    self._window["{} {}".format(i, j)].update(" ", disabled = True, button_color=("#303f9f", "#303f9f"))
-                elif(val == -4):
-                    self._window["{} {}".format(i, j)].update(" ", disabled = False)
-                elif(val == -1):
-                    self._window["{} {}".format(i, j)].update("*", disabled = True)
-                elif(val == -2):
-                    self._window["{} {}".format(i, j)].update("!", disabled = True)
-                    self._window["-FLAGS-"].update(int(self._window["-FLAGS-"].get()) + 1)
-                elif(val == -3):
-                    self._window["{} {}".format(i, j)].update("?", disabled = True)
-                    self._window["-FLAGS-"].update(int(self._window["-FLAGS-"].get()) - 1)
-                else:
-                    self._window["{} {}".format(i, j)].update("{}".format(val), disabled = True, button_color=("#FFFFFF", "#3f51b5"))
+        """
+        Parses the graphical board of the i, j cell
+        Changes int value of the board into character shown to the user and disables necessary cells
+        
+        Parameters:
+            i(int): y dimension number n of the board to be parsed
+            j(int): x dimension number m of the board to be parsed
+        """
+        val = self._board.getBoard()[i][j]
+        if(val == 0):
+            self._window["{} {}".format(i, j)].update(" ", disabled = True, button_color=("#303f9f", "#303f9f"))
+        elif(val == -4):
+            self._window["{} {}".format(i, j)].update(" ", disabled = False)
+        elif(val == -1):
+            self._window["{} {}".format(i, j)].update("*", disabled = True)
+        elif(val == -2):
+            self._window["{} {}".format(i, j)].update("!", disabled = True)
+            self._window["-FLAGS-"].update(int(self._window["-FLAGS-"].get()) + 1)
+        elif(val == -3):
+            self._window["{} {}".format(i, j)].update("?", disabled = True)
+            self._window["-FLAGS-"].update(int(self._window["-FLAGS-"].get()) - 1)
+        else:
+            self._window["{} {}".format(i, j)].update("{}".format(val), disabled = True, button_color=("#FFFFFF", "#3f51b5"))
                     
     def parseXyzzy(self, key):
+        """
+        Handles the keystrokes sent by the user.
+        If the player inputs 'xyzzy', all the buttons under which bombs reside change their color to yellow
+        """
         if(key == "x"):
             self._keyInputs = ["x"]
         else:
@@ -86,6 +125,12 @@ class GameWindow:
                         self._window["{} {}".format(n, m)].update(button_color=("#ff5722", "#ff5722"))
                           
     def startGameWindow(self, board):
+        """
+        Starts the window containing the whole game GUI and its layout
+        
+        Parameters:
+            board(Board): the board which is initiated into _board attribute
+        """
         self._board = board
         windowLayout = [
             [psg.Text("0", key='-FLAGS-', text_color="#FFFFFF", background_color="#303f9f", justification="right", expand_x=True, pad=(0, 0)), 
@@ -99,6 +144,13 @@ class GameWindow:
         self._keyInputs = []
     
     def createPopup(self, won):
+        """
+        Creates a popup presenting a decision to the player whether he wants to continue the game or exit it.
+        Value of the popup changes with the won value 
+            
+        Parameters:
+            won(Bool): a boolean meaning if the game was won.
+        """
         prompt = "You have won! \nStart a new game?" if won == True else "You lost. \nStart a new game?"
         returnValue = psg.popup(prompt, background_color="#303f9f", button_color=("#FFFFFF", "#3f51b5"), custom_text=("New game", "Exit"), grab_anywhere=True)
         return returnValue
