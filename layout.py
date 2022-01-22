@@ -13,11 +13,11 @@ class Layout:
     """
     def _boundaries(self, val, max):
         """
-        Checks if val is within bounds of map <br/>
+        Checks if val is within bounds of map
         
         Parameters:
             val(int): value to check
-            max(int): maximum bound value. Pass <i>n</i> or <i>m</i>
+            max(int): maximum bound value. Pass n or m
             
         Returns:
             either val, 0 if val < 0 or max if val > max - 1

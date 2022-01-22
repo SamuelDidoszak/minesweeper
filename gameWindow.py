@@ -21,7 +21,7 @@ class GameWindow:
             [psg.Text("m: \t", text_color="#FFFFFF", background_color="#303f9f"), psg.Input(key="-M-", text_color="#FFFFFF", background_color="#3f51b5")],
             [psg.Text("Bombs: \t", text_color="#FFFFFF", background_color="#303f9f"), psg.Input(key="-BOMBS-", text_color="#FFFFFF", background_color="#3f51b5")],
             [psg.Text(size=(40,1), key='-ERRORMSG-', text_color="#ff5722", background_color="#303f9f")],
-            [psg.Button("Start", button_color=("#FFFFFF", "#3f51b5"))]
+            [psg.Button("Start", key="-START-", button_color=("#FFFFFF", "#3f51b5"))]
         ]
         self._window = psg.Window("Minesweeper", windowLayout, finalize=True
                                  , background_color="#303f9f")
