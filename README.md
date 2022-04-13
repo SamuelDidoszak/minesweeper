@@ -1,6 +1,22 @@
-﻿# Samuel Didoszak
+# Minesweeper
+Classic saper game written in Python using scanline algorithm and PySimpleGUI for the GUI library.
 
-## Projekt 13:	Saper
+# Features
+
+- Menu, where game parameters are inserted
+- Scanline algorithm for finding bombless area adjacent to the clicked cell
+- Cheatcode "xyzzy" that highlights bomb placement
+- Unit tests
+
+# Screenshots
+
+<img src="https://user-images.githubusercontent.com/70522994/163100362-7a24f25c-662b-488c-b52d-efcf3e97e0d6.png" width="49%"></img> 
+<img src="https://user-images.githubusercontent.com/70522994/163100368-48c540f8-e05e-43d8-87f6-8f65844323ee.png" width="48.2%"></img> 
+
+
+## The game was made as a finishing project for symbolic languages subject
+## Polish version:
+
 
 # Opis zadania
 - Główne okno zawiera dwa pola tekstowe do wprowadzania rozmiaru planszy (*n* na *m* pól), plansze o wymiarach *n* na *m* pól (np. siatka przycisków), pole tekstowe na wprowadzenie liczby min na planszy, liczbę oznaczonych pól, liczbę min na planszy, oraz przycisk rozpoczęcia nowej gry.
